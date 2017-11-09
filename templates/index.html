@@ -16,9 +16,19 @@ window.onload = function() {
 
 function doWork() {
 	// ajax the JSON to the server
-	$.post("receiver", JSON.stringify(cars), function(){
-
-	});
+	$.ajax({
+                type: "POST",
+                url: "/receiver",
+                contentType: "application/json",
+                data: JSON.stringify(cars),
+                dataType: "json",
+                success: function(response) {
+                    console.log(response);
+                },
+                error: function(err) {
+                    console.log(err);
+                }
+            });
 	// stop link reloading the page
  event.preventDefault();
 }

@@ -2,7 +2,7 @@
 
 import sys
 
-from flask import Flask, render_template, request, redirect, Response
+from flask import Flask, render_template, request, redirect, Response, jsonify
 import random, json
 
 app = Flask(__name__)
@@ -24,7 +24,7 @@ def worker():
 			result += str(item['make']) + '\n'
 
 		print(result)
-		return result
+		return jsonify(result)
 	# else:
 	# 	return "ok"
 
