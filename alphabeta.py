@@ -2,9 +2,9 @@ import sys, math, numpy as np
 from copy import copy, deepcopy
 
 #number pieces in a row to win
-TARGET = 3
-ROWS = 4
-COLS = 4
+TARGET = 4
+ROWS = 6
+COLS = 7
 DEEPEST = 3
 next_actions = {}
 
@@ -42,6 +42,7 @@ def min_value(board, a, b, depth):
 
 #returns true if there is a four in a row (X's) on the board
 def is_win(board, disc_type):
+	assert disc_type == "O" or disc_type == "X"
 	arr = []
 	for i in range(0, TARGET):
 		arr.append(disc_type)
@@ -83,6 +84,8 @@ def actions(board):
 # action (number from 0-6)
 # disc_type = string "X" or string "O"
 def result(board, action, disc_type):
+	assert type(action) == int and action >= 0 and action < COLS
+	assert disc_type == "O" or disc_type == "X"
 	new_board = deepcopy(board)
 	i = ROWS - 1
 	while i >= 0:	
