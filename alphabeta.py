@@ -95,7 +95,7 @@ def result(board, action, disc_type):
 			return new_board
 	return new_board
 
-is_win([["","","","",],["","","",""],["","","",""],["X", "X", "X", "O"]])
+is_win([["","","","",],["","","",""],["","","",""],["X", "X", "X", "O"]], "X")
 board = [["","","","",],["","","",""],["","","",""],["X", "X", "X", "O"]]
 action = 3
 disc_type = "O"
