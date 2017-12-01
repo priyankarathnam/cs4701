@@ -80,7 +80,11 @@ def utility(board):
 
 #returns a list of numbers that represent possible actions (0-6)
 def actions(board):
-	return
+	ret = []
+	for i in range(0, cols):
+		if board[0][i] == "":
+			ret.append(i)
+	return ret
 
 #returns resulting board after taking an action (number from 0-6)
 def result(board, action):
