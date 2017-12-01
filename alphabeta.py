@@ -1,4 +1,5 @@
 import sys, math, numpy as np
+from copy import copy, deepcopy
 
 #number pieces in a row to win
 TARGET = 3
@@ -87,9 +88,23 @@ def actions(board):
 			ret.append(i)
 	return ret
 
-#returns resulting board after taking an action (number from 0-6)
-#type = string "X" or string "O"
-def result(board, action, type):
-	return
+#returns resulting board (without modifying the old board) after taking an 
+# action (number from 0-6)
+# disc_type = string "X" or string "O"
+def result(board, action, disc_type):
+	new_board = deepcopy(board)
+	i = ROWS - 1
+	while i >= 0:	
+		if (new_board[i][action] != ""):
+			if i == 0:
+				print("ILLEGAL ACTION. COLUMN " + str(action) + " IS ALREADY FILLED.")
+			i -= 1
+		else:
+			new_board[i][action] = disc_type
+			return new_board
+	return new_board
 
 is_win([["","","","",],["","","",""],["","","",""],["X", "X", "X", "O"]])
+board = [["","","","",],["","","",""],["","","",""],["X", "X", "X", "O"]]
+action = 3
+disc_type = "O"
