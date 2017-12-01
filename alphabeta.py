@@ -52,6 +52,7 @@ def is_win(board, disc_type):
 	transposed = np_arr.transpose()
 	if num_matches(arr, transposed) > 0:
 		return True
+	#diags code from https://stackoverflow.com/questions/6313308/get-all-the-diagonals-in-a-matrix-list-of-lists-in-python
 	diags = [np_arr[::-1,:].diagonal(i) for i in range(-np_arr.shape[0]+1,np_arr.shape[1])]
 	diags.extend(np_arr.diagonal(i) for i in range(np_arr.shape[1]-1,-np_arr.shape[0],-1))
 	if num_matches(arr, diags) > 0:
@@ -66,6 +67,18 @@ def is_symmetric(sublist):
 	else:
 		return is_symmetric(sublist[1:-1])
 
+#find number of times sublist appears on board in all directions
+def test_directions(board, sublist):
+	count = 0
+	np_arr = np.array(board)
+	transposed = np_arr.transpose()
+	#diags code from https://stackoverflow.com/questions/6313308/get-all-the-diagonals-in-a-matrix-list-of-lists-in-python
+	diags = [np_arr[::-1,:].diagonal(i) for i in range(-np_arr.shape[0]+1,np_arr.shape[1])]
+	diags.extend(np_arr.diagonal(i) for i in range(np_arr.shape[1]-1,-np_arr.shape[0],-1))
+	count += (num_matches(arr, np_arr)+num_matches(arr, transposed)+num_matches(arr, diags))
+	return count
+
+#returns the number of matches between the sublist and each row of the matrix
 #modified from https://stackoverflow.com/questions/42107865/python-numpy-array-sublist-match-with-large-list-where-sequence-matter
 def num_matches(sublist, matrix):
 	count = 0;
