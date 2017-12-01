@@ -58,6 +58,14 @@ def is_win(board, disc_type):
 		return True
 	return False
 
+def is_symmetric(sublist):
+	if len(sublist) <= 1:
+		return True
+	if sublist[0] != sublist[-1]:
+		return False
+	else:
+		return is_symmetric(sublist[1:-1])
+
 #modified from https://stackoverflow.com/questions/42107865/python-numpy-array-sublist-match-with-large-list-where-sequence-matter
 def num_matches(sublist, matrix):
 	count = 0;
