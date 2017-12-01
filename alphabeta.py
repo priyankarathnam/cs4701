@@ -15,7 +15,7 @@ def a_b_search(board, depth):
 	return result(board, next_actions[v])
 
 def max_value(board, a, b, depth):
-	if depth == DEEPEST or is_win(board) or is_loss(board):
+	if depth == DEEPEST or is_win(board, "X") or is_win(board, "O"):
 		return utility(board)
 	v = -math.inf
 	for action in actions(board):
@@ -29,7 +29,7 @@ def max_value(board, a, b, depth):
 	return v
 
 def min_value(board, a, b, depth):
-	if depth == DEEPEST or is_loss(board) or is_win(board):
+	if depth == DEEPEST or is_win(board, "X") or is_win(board, "O"):
 		return utility(board)
 	v = math.inf
 	for action in actions(board):
@@ -40,40 +40,31 @@ def min_value(board, a, b, depth):
 	return v
 
 #returns true if there is a four in a row (X's) on the board
-def is_win(board):
-	x_arr = []
+def is_win(board, disc_type):
+	arr = []
 	for i in range(0, TARGET):
-		x_arr.append("X")
-	if x_arr in board:
-		return True
+		arr.append(disc_type)
 	np_arr = np.array(board)
+	if num_matches(arr, np_arr) > 0:
+		return True
 	transposed = np_arr.transpose()
-	if x_arr in transposed.tolist():
+	if num_matches(arr, transposed) > 0:
 		return True
 	diags = [np_arr[::-1,:].diagonal(i) for i in range(-np_arr.shape[0]+1,np_arr.shape[1])]
 	diags.extend(np_arr.diagonal(i) for i in range(np_arr.shape[1]-1,-np_arr.shape[0],-1))
-	diags = [n.tolist() for n in diags]
-	if x_arr in diags:
+	if num_matches(arr, diags) > 0:
 		return True
 	return False
 
-#returns true if there is a four in a row (O's) on the board
-def is_loss(board):
-	o_arr = []
-	for i in range(0, TARGET):
-		o_arr.append("O")
-	if o_arr in board:
-		return True
-	np_arr = np.array(board)
-	transposed = np_arr.transpose()
-	if o_arr in transposed.tolist():
-		return True
-	diags = [np_arr[::-1,:].diagonal(i) for i in range(-np_arr.shape[0]+1,np_arr.shape[1])]
-	diags.extend(np_arr.diagonal(i) for i in range(np_arr.shape[1]-1,-np_arr.shape[0],-1))
-	diags = [n.tolist() for n in diags]
-	if o_arr in diags:
-		return True
-	return False
+#modified from https://stackoverflow.com/questions/42107865/python-numpy-array-sublist-match-with-large-list-where-sequence-matter
+def num_matches(sublist, matrix):
+	count = 0;
+	n = len(sublist)
+	for row in matrix:
+		for i in range(len(row)-n+1):
+			if (sublist==row[i:i+n]).all():
+				count+=1
+	return count
 
 #returns score for this state (heuristic)
 def utility(board):
