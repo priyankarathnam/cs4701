@@ -75,7 +75,10 @@ def test_directions(board, sublist):
 	#diags code from https://stackoverflow.com/questions/6313308/get-all-the-diagonals-in-a-matrix-list-of-lists-in-python
 	diags = [np_arr[::-1,:].diagonal(i) for i in range(-np_arr.shape[0]+1,np_arr.shape[1])]
 	diags.extend(np_arr.diagonal(i) for i in range(np_arr.shape[1]-1,-np_arr.shape[0],-1))
-	count += (num_matches(arr, np_arr)+num_matches(arr, transposed)+num_matches(arr, diags))
+	count += (num_matches(sublist, np_arr)+num_matches(sublist, transposed)+num_matches(sublist, diags))
+	if not is_symmetric(sublist):
+		sublist.reverse()
+		count += (num_matches(sublist, np_arr)+num_matches(sublist, transposed)+num_matches(sublist, diags))
 	return count
 
 #returns the number of matches between the sublist and each row of the matrix
@@ -118,8 +121,3 @@ def result(board, action, disc_type):
 			new_board[i][action] = disc_type
 			return new_board
 	return new_board
-
-is_win([["","","","",],["","","",""],["","","",""],["X", "X", "X", "O"]], "X")
-board = [["","","","",],["","","",""],["","","",""],["X", "X", "X", "O"]]
-action = 3
-disc_type = "O"
