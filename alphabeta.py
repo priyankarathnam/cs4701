@@ -40,7 +40,7 @@ def min_value(board, a, b, depth):
 		b = min(b,v)
 	return v
 
-#returns true if there is a four in a row (X's) on the board
+#returns true if there is a four in a row for the specific disc type on the board
 def is_win(board, disc_type):
 	assert disc_type == "O" or disc_type == "X"
 	arr = []
