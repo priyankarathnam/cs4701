@@ -22,7 +22,7 @@ app = Flask(__name__)
 @app.route('/')
 def output():
 	# serve index template
-	return render_template('index.html', name='Joe')
+	return render_template('index.html', name='CS4701')
 
 @app.route('/receiver', methods = ['POST', 'GET'])
 def worker():
@@ -56,8 +56,7 @@ def worker2():
 		if is_win(result, "O"):
 			return jsonify("loss")
 		return jsonify("no loss")
-	# else:
-	# 	return "ok"
+
 #initialize depth to 0
 def a_b_search(board, depth):
 	assert len(board) == ROWS
@@ -70,10 +69,8 @@ def max_value(board, a, b, depth):
 	if depth == DEEPEST or is_win(board, "X") or is_win(board, "O"):
 		print("terminal test")
 		if is_win(board, "O"):
-			print(-math.inf)
 			return -math.inf
 		if is_win(board, "X"):
-			print(math.inf)
 			return math.inf
 		print(utility(board))
 		return utility(board)
@@ -97,10 +94,8 @@ def min_value(board, a, b, depth):
 	if depth == DEEPEST or is_win(board, "X") or is_win(board, "O"):
 		print("terminal test")
 		if is_win(board, "O"):
-			print(-math.inf)
 			return -math.inf
 		if is_win(board, "X"):
-			print(math.inf)
 			return math.inf
 		print(utility(board))
 		return utility(board)
@@ -175,35 +170,12 @@ def utility(board):
 		num = test_directions(board, OFFENSE_PATTERNS[pattern])
 		if not num == 0:
 			total+=OFFENSE_SCORES[pattern]*num
-		if total == math.inf:
-			return total
 	#defense
 	for pattern in DEFENSE_PATTERNS.keys():
 		num = test_directions(board, DEFENSE_PATTERNS[pattern])
 		if not num == 0:
 			total+=DEFENSE_SCORES[pattern]*num
-		if total == -math.inf:
-			return total
 	return total
-
-#returns score for this state (heuristic)
-# def min_utility(board):	
-# 	total = 0
-# 	#defense
-# 	for pattern in DEFENSE_PATTERNS.keys():
-# 		num = test_directions(board, DEFENSE_PATTERNS[pattern])
-# 		if not num == 0:
-# 			total+=DEFENSE_SCORES[pattern]*num
-# 		if total == -math.inf:
-# 			return total
-# 	#offense
-# 	for pattern in OFFENSE_PATTERNS.keys():
-# 		num = test_directions(board, OFFENSE_PATTERNS[pattern])
-# 		if not num == 0:
-# 			total+=OFFENSE_SCORES[pattern]*num
-# 		if total == math.inf:
-# 			return total
-# 	return total
 
 #returns a list of numbers that represent possible actions (number 0-6)
 def actions(board):
