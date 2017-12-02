@@ -113,7 +113,7 @@ function checkLoss() {
 
 function jsonify(response) {
 	var json = [];
-	response.slice(0,7).forEach(function (row) {
+	response.slice(0,6).forEach(function (row) {
 		json.push({ "0": row[0], "1": row[1], "2": row[2], "3": row[3], "4": row[4], "5": row[5], "6": row[6]});
 	});
 	return json;
