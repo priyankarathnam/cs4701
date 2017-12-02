@@ -1,18 +1,58 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
 <script type="text/javascript">
 // setup some JSON to use
-var cars = [
-	{ "make":"Porsche", "model":"911S" },
-	{ "make":"Mercedes-Benz", "model":"220SE" },
-	{ "make":"Jaguar","model": "Mark VII" }
+var connectFour = [
+	{ "0":"", "1":"", "2":"", "3":"", "4":"", "5":"", "6":""},
+	{ "0":"", "1":"", "2":"", "3":"", "4":"", "5":"", "6":""},
+	{ "0":"", "1":"", "2":"", "3":"", "4":"", "5":"", "6":""},
+	{ "0":"", "1":"", "2":"", "3":"", "4":"", "5":"", "6":""},
+	{ "0":"", "1":"", "2":"", "3":"", "4":"", "5":"", "6":""},
+	{ "0":"", "1":"", "2":"", "3":"", "4":"", "5":"", "6":""}
 ];
 
 window.onload = function() {
 	// setup the button click
-	document.getElementById("theButton").onclick = function() {
+	document.getElementById("row0").innerHTML = JSON.stringify(connectFour[0]);
+	document.getElementById("row1").innerHTML = JSON.stringify(connectFour[1]);
+	document.getElementById("row2").innerHTML = JSON.stringify(connectFour[2]);
+	document.getElementById("row3").innerHTML = JSON.stringify(connectFour[3]);
+	document.getElementById("row4").innerHTML = JSON.stringify(connectFour[4]);
+	document.getElementById("row5").innerHTML = JSON.stringify(connectFour[5]);
+	document.getElementById("myButton").onclick = function() {
 		doWork()
 	};
 }
+
+$(document).ready(function(){
+    document.getElementById("opButton").onclick = function() {
+    	var radioValue = $("input[name='move']:checked").val();
+        if(radioValue){
+        	row = 5;
+            while (row>=0){
+            	console.log(radioValue);
+            	console.log(connectFour[row][radioValue]);
+            	if (connectFour[row][radioValue] == ""){
+            		connectFour[row][radioValue] = "O";
+            		break;
+            	}
+            	row--;
+            }
+            if (row < 0){
+            	alert("Invalid Move!");
+            	return;
+            }
+            console.log(connectFour[row][radioValue]);
+            document.getElementById("row0").innerHTML = JSON.stringify(connectFour[0]);
+			document.getElementById("row1").innerHTML = JSON.stringify(connectFour[1]);
+			document.getElementById("row2").innerHTML = JSON.stringify(connectFour[2]);
+			document.getElementById("row3").innerHTML = JSON.stringify(connectFour[3]);
+			document.getElementById("row4").innerHTML = JSON.stringify(connectFour[4]);
+			document.getElementById("row5").innerHTML = JSON.stringify(connectFour[5]);
+        }
+    };
+    
+});
 
 function doWork() {
 	// ajax the JSON to the server
@@ -20,10 +60,19 @@ function doWork() {
                 type: "POST",
                 url: "/receiver",
                 contentType: "application/json",
-                data: JSON.stringify(cars),
+                data: JSON.stringify(connectFour),
                 dataType: "json",
                 success: function(response) {
                     console.log(response);
+                    connectFour = jsonify(response);
+                    document.getElementById("row0").innerHTML = JSON.stringify(connectFour[0]);
+					document.getElementById("row1").innerHTML = JSON.stringify(connectFour[1]);
+					document.getElementById("row2").innerHTML = JSON.stringify(connectFour[2]);
+					document.getElementById("row3").innerHTML = JSON.stringify(connectFour[3]);
+					document.getElementById("row4").innerHTML = JSON.stringify(connectFour[4]);
+					document.getElementById("row5").innerHTML = JSON.stringify(connectFour[5]);
+                    console.log(connectFour);
+
                 },
                 error: function(err) {
                     console.log(err);
@@ -32,6 +81,32 @@ function doWork() {
 	// stop link reloading the page
  event.preventDefault();
 }
+
+function jsonify(response) {
+	json = [];
+	response.forEach(function (row) {
+		json.push({ "0": row[0], "1": row[1], "2": row[2], "3": row[3], "4": row[4], "5": row[5], "6": row[6]});
+	});
+	return json;
+}
 </script>
-This will send data using AJAX to Python:<br /><br />
-<a href="" id="theButton">Click Me</a>
+<p id="row0"></p>
+<p id="row1"></p>
+<p id="row2"></p>
+<p id="row3"></p>
+<p id="row4"></p>
+<p id="row5"></p>
+<h4>Our AI Will Tell You Your Next Best Move</h4>
+<p><input type="button" id="myButton" value="Play My Next Best Move"></p>
+<h4>Select Opponent's Move</h4>
+<p> 
+    <label><input type="radio" name="move" value="0">0</label> 
+    <label><input type="radio" name="move" value="1">1</label>
+    <label><input type="radio" name="move" value="2">2</label> 
+    <label><input type="radio" name="move" value="3">3</label>
+    <label><input type="radio" name="move" value="4">4</label> 
+    <label><input type="radio" name="move" value="5">5</label>
+    <label><input type="radio" name="move" value="6">6</label>
+</p>
+<p><input type="button" id="opButton" value="Play Opponent's Move"></p>
+
