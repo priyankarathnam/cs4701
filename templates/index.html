@@ -20,7 +20,7 @@ window.onload = function() {
 	document.getElementById("row4").innerHTML = JSON.stringify(connectFour[4]);
 	document.getElementById("row5").innerHTML = JSON.stringify(connectFour[5]);
 	document.getElementById("myButton").onclick = function() {
-		doWork()
+		callAb()
 	};
 }
 
@@ -49,12 +49,13 @@ $(document).ready(function(){
 			document.getElementById("row3").innerHTML = JSON.stringify(connectFour[3]);
 			document.getElementById("row4").innerHTML = JSON.stringify(connectFour[4]);
 			document.getElementById("row5").innerHTML = JSON.stringify(connectFour[5]);
+			checkLoss();
         }
     };
     
 });
 
-function doWork() {
+function callAb() {
 	// ajax the JSON to the server
 	$.ajax({
                 type: "POST",
@@ -71,6 +72,34 @@ function doWork() {
 					document.getElementById("row3").innerHTML = JSON.stringify(connectFour[3]);
 					document.getElementById("row4").innerHTML = JSON.stringify(connectFour[4]);
 					document.getElementById("row5").innerHTML = JSON.stringify(connectFour[5]);
+
+					if (response[6] == "win"){
+						setTimeout(function(){ alert("You win!"); }, 500);
+					}
+                    console.log(connectFour);
+
+                },
+                error: function(err) {
+                    console.log(err);
+                }
+            });
+	// stop link reloading the page
+ event.preventDefault();
+}
+
+function checkLoss() {
+	// ajax the JSON to the server
+	$.ajax({
+                type: "POST",
+                url: "/receiver2",
+                contentType: "application/json",
+                data: JSON.stringify(connectFour),
+                dataType: "json",
+                success: function(response) {
+                    console.log(response);
+					if (response == "loss"){
+						alert("You lose!")
+					}
                     console.log(connectFour);
 
                 },
@@ -83,8 +112,8 @@ function doWork() {
 }
 
 function jsonify(response) {
-	json = [];
-	response.forEach(function (row) {
+	var json = [];
+	response.slice(0,7).forEach(function (row) {
 		json.push({ "0": row[0], "1": row[1], "2": row[2], "3": row[3], "4": row[4], "5": row[5], "6": row[6]});
 	});
 	return json;

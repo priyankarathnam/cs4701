@@ -14,7 +14,7 @@ DEEPEST = 3
 OFFENSE_PATTERNS = {"win": ["X","X","X","X"], "almost_win": ["","X","X","X",""], "three_x1": ["X","X","X",""], "three_x2": ["X","X","","X"], "two_x1": ["X", "","X",""], "two_x2": ["","X","X",""], "two_x3": ["X","X","",""]}
 DEFENSE_PATTERNS = {"loss": ["O","O","O","O"], "almost_loss": ["","O","O","O",""], "three_o1": ["O","O","O",""], "three_o2": ["O","O","","O"], "two_o1": ["O", "","O",""], "two_o2": ["","O","O",""], "two_o3": ["O","O","",""]}
 OFFENSE_SCORES = {"win": math.inf, "almost_win": 20, "three_x1": 10, "three_x2": 10, "two_x1": 5, "two_x2": 5, "two_x3": 5}
-DEFENSE_SCORES = {"loss": -math.inf, "almost_loss": -20, "three_o1": -10, "three_o2": -10, "two_o1": -5, "two_o2": -5, "two_o3": -5}
+DEFENSE_SCORES = {"loss": -math.inf, "almost_loss": -40, "three_o1": -10, "three_o2": -10, "two_o1": -5, "two_o2": -5, "two_o3": -5}
 next_actions = {}
 
 app = Flask(__name__)
@@ -35,7 +35,25 @@ def worker():
 			# loop over every row
 			result.append([str(item['0']),str(item['1']),str(item['2']),str(item['3']),str(item['4']),str(item['5']),str(item['6'])])
 		result = a_b_search(result, 0)
+		if is_win(result, "X"):
+			result.append(["win"])
+			return jsonify(result)
 		return jsonify(result)
+	# else:
+	# 	return "ok"
+@app.route('/receiver2', methods = ['POST', 'GET'])
+def worker2():
+	# read json + reply
+	# if request.method=='POST':
+		data = request.get_json(force=True)
+		result = []
+
+		for item in data:
+			# loop over every row
+			result.append([str(item['0']),str(item['1']),str(item['2']),str(item['3']),str(item['4']),str(item['5']),str(item['6'])])
+		if is_win(result, "O"):
+			return jsonify("loss")
+		return jsonify("no loss")
 	# else:
 	# 	return "ok"
 #initialize depth to 0
