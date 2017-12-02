@@ -30,8 +30,6 @@ $(document).ready(function(){
         if(radioValue){
         	row = 5;
             while (row>=0){
-            	console.log(radioValue);
-            	console.log(connectFour[row][radioValue]);
             	if (connectFour[row][radioValue] == ""){
             		connectFour[row][radioValue] = "O";
             		break;
@@ -42,7 +40,7 @@ $(document).ready(function(){
             	alert("Invalid Move!");
             	return;
             }
-            console.log(connectFour[row][radioValue]);
+            console.log("opponent move: "+JSON.stringify(connectFour));
             document.getElementById("row0").innerHTML = JSON.stringify(connectFour[0]);
 			document.getElementById("row1").innerHTML = JSON.stringify(connectFour[1]);
 			document.getElementById("row2").innerHTML = JSON.stringify(connectFour[2]);
@@ -64,7 +62,6 @@ function callAb() {
                 data: JSON.stringify(connectFour),
                 dataType: "json",
                 success: function(response) {
-                    console.log(response);
                     connectFour = jsonify(response);
                     document.getElementById("row0").innerHTML = JSON.stringify(connectFour[0]);
 					document.getElementById("row1").innerHTML = JSON.stringify(connectFour[1]);
@@ -76,7 +73,7 @@ function callAb() {
 					if (response[6] == "win"){
 						setTimeout(function(){ alert("You win!"); }, 500);
 					}
-                    console.log(connectFour);
+                    console.log("my move: "+JSON.stringify(connectFour));
 
                 },
                 error: function(err) {
@@ -96,12 +93,9 @@ function checkLoss() {
                 data: JSON.stringify(connectFour),
                 dataType: "json",
                 success: function(response) {
-                    console.log(response);
 					if (response == "loss"){
 						alert("You lose!")
 					}
-                    console.log(connectFour);
-
                 },
                 error: function(err) {
                     console.log(err);
