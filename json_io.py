@@ -105,7 +105,7 @@ def a_b_search_ai(board, depth, current_player, opponent_player):
 	assert len(board) == ROWS
 	assert len(board[0]) == COLS
 	v = max_value_ai(board, -math.inf, math.inf, depth, current_player, opponent_player)
-	# print(next_actions)
+	print(next_actions)
 	return result(board, next_actions[v], current_player)
 
 def ai_against_random(board, first_player, second_player):
@@ -211,7 +211,10 @@ def max_value(board, a, b, depth):
 		action_value = min_value(result(board, action, "X"), a, b, depth+1)
 		#print("action value: "+str(action_value))
 		if depth == 0:
-			next_actions[action_value] = action
+			if (action_value in next_actions.keys() and random.choice([0,1]) == 1):
+				pass
+			else:
+				next_actions[action_value] = action
 		v = max(v, action_value)
 		if v >= b:
 			return v
