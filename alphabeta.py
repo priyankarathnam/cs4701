@@ -6,6 +6,10 @@ TARGET = 4
 ROWS = 6
 COLS = 7
 DEEPEST = 3
+OFFENSE_PATTERNS = {"win": ["X","X","X","X"], "almost_win": ["","X","X","X",""], "three_x1": ["X","X","X",""], "three_x2": ["X","X","","X"], "two_x1": ["X", "","X",""], "two_x2": ["","X","X",""], "two_x3": ["X","X","",""]}
+DEFENSE_PATTERNS = {"loss": ["O","O","O","O"], "almost_loss": ["","O","O","O",""], "three_o1": ["O","O","O",""], "three_o2": ["O","O","","O"], "two_o1": ["O", "","O",""], "two_o2": ["","O","O",""], "two_o3": ["O","O","",""]}
+OFFENSE_SCORES = {"win": math.inf, "almost_win": math.inf, "three_x1": 10, "three_x2": 10, "two_x1": 5, "two_x2": 5, "two_x3": 5}
+DEFENSE_SCORES = {"loss": -math.inf, "almost_loss": -math.inf, "three_o1": -10, "three_o2": -10, "two_o1": -5, "two_o2": -5, "two_o3": -5}
 next_actions = {}
 
 #initialize depth to 0
@@ -13,14 +17,16 @@ def a_b_search(board, depth):
 	assert len(board) == ROWS
 	assert len(board[0]) == COLS
 	v = max_value(board, -math.inf, math.inf, depth)
-	return result(board, next_actions[v])
+	print(v)
+	return result(board, next_actions[v], "X")
 
 def max_value(board, a, b, depth):
 	if depth == DEEPEST or is_win(board, "X") or is_win(board, "O"):
-		return utility(board)
+		return max_utility(board)
 	v = -math.inf
 	for action in actions(board):
 		action_value = min_value(result(board, action, "X"), a, b, depth+1)
+		print(action_value)
 		if depth == 0:
 			next_actions[action_value] = action
 		v = max(v, action_value)
@@ -31,7 +37,9 @@ def max_value(board, a, b, depth):
 
 def min_value(board, a, b, depth):
 	if depth == DEEPEST or is_win(board, "X") or is_win(board, "O"):
-		return utility(board)
+		print("terminal test")
+		print(min_utility(board))
+		return min_utility(board)
 	v = math.inf
 	for action in actions(board):
 		v = min(v, max_value(result(board, action, "O"), a, b, depth+1))
@@ -93,8 +101,42 @@ def num_matches(sublist, matrix):
 	return count
 
 #returns score for this state (heuristic)
-def utility(board):
-	return
+def max_utility(board):
+	total = 0
+	#offense
+	for pattern in OFFENSE_PATTERNS.keys():
+		num = test_directions(board, OFFENSE_PATTERNS[pattern])
+		if not num == 0:
+			total+=OFFENSE_SCORES[pattern]*num
+		if total == math.inf:
+			return total
+	#defense
+	for pattern in DEFENSE_PATTERNS.keys():
+		num = test_directions(board, DEFENSE_PATTERNS[pattern])
+		if not num == 0:
+			total+=DEFENSE_SCORES[pattern]*num
+		if total == -math.inf:
+			break
+	return total
+
+#returns score for this state (heuristic)
+def min_utility(board):	
+	total = 0
+	#defense
+	for pattern in DEFENSE_PATTERNS.keys():
+		num = test_directions(board, DEFENSE_PATTERNS[pattern])
+		if not num == 0:
+			total+=DEFENSE_SCORES[pattern]*num
+		if total == -math.inf:
+			return total
+	#offense
+	for pattern in OFFENSE_PATTERNS.keys():
+		num = test_directions(board, OFFENSE_PATTERNS[pattern])
+		if not num == 0:
+			total+=OFFENSE_SCORES[pattern]*num
+		if total == math.inf:
+			break
+	return total
 
 #returns a list of numbers that represent possible actions (number 0-6)
 def actions(board):
