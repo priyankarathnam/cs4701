@@ -13,8 +13,8 @@ COLS = 7
 DEEPEST = 3
 OFFENSE_PATTERNS = {"almost_win": ["","X","X","X",""], "three_x1": ["X","X","X",""], "three_x2": ["X","X","","X"], "two_x1": ["X", "","X",""], "two_x2": ["","X","X",""], "two_x3": ["X","X","",""]}
 DEFENSE_PATTERNS = {"almost_loss": ["","O","O","O",""], "three_o1": ["O","O","O",""], "three_o2": ["O","O","","O"], "two_o1": ["O", "","O",""], "two_o2": ["","O","O",""], "two_o3": ["O","O","",""]}
-OFFENSE_SCORES = {"almost_win": 1000, "three_x1": 1000, "three_x2": 100, "two_x1": 10, "two_x2": 10, "two_x3": 10}
-DEFENSE_SCORES = {"almost_loss": -1000, "three_o1": -1000, "three_o2": -100, "two_o1": -10, "two_o2": -10, "two_o3": -10}
+OFFENSE_SCORES = {"almost_win": 1000, "three_x1": 100, "three_x2": 100, "two_x1": 10, "two_x2": 10, "two_x3": 10}
+DEFENSE_SCORES = {"almost_loss": -3000, "three_o1": -300, "three_o2": -300, "two_o1": -30, "two_o2": -30, "two_o3": -30}
 next_actions = {}
 
 app = Flask(__name__)

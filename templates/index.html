@@ -1,5 +1,35 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script src="https://d3js.org/d3.v4.min.js"></script>
+<style>
+.svg {float: left;}
+.buttons {float: left; margin-left: 5px;}
+</style>
+<div class="svg">
+<p id="svg"></p>
+</div>
+<div class="buttons">
+<h4>Our AI Will Tell You Your Next Best Move</h4>
+<p><input type="button" id="myButton" value="Play My Next Best Move"></p>
+<h4>Select Opponent's Move</h4>
+<p> 
+    <label><input type="radio" name="move" value="0">0</label> 
+    <label><input type="radio" name="move" value="1">1</label>
+    <label><input type="radio" name="move" value="2">2</label> 
+    <label><input type="radio" name="move" value="3">3</label>
+    <label><input type="radio" name="move" value="4">4</label> 
+    <label><input type="radio" name="move" value="5">5</label>
+    <label><input type="radio" name="move" value="6">6</label>
+</p>
+<p><input type="button" id="opButton" value="Play Opponent's Move"></p>
+</div>
+<div>
+<p id="row0"></p>
+<p id="row1"></p>
+<p id="row2"></p>
+<p id="row3"></p>
+<p id="row4"></p>
+<p id="row5"></p>
+</div>
 <script type="text/javascript">
 // setup some JSON to use
 var connectFour = [
@@ -10,15 +40,61 @@ var connectFour = [
 	{ "0":"", "1":"", "2":"", "3":"", "4":"", "5":"", "6":""},
 	{ "0":"", "1":"", "2":"", "3":"", "4":"", "5":"", "6":""}
 ];
+var width = 700;
+var height = 600;
+var lineWidth = 6;
+var boxWidth = width/7;
+var boxHeight = height/6;
+
+var svg = d3.select("#svg").append("svg")
+	.attr("width", width)
+	.attr("height", height);
+
+svg.append("rect")
+	.attr("x", 0)
+	.attr("y", 0)
+	.attr("width", width)
+	.attr("height", height)
+	.attr("fill", "#6491EB")
+	.attr("stroke", "none");
+
+svg.append("rect")
+	.attr("x", 0)
+	.attr("y", 0)
+	.attr("width", width)
+	.attr("height", height)
+	.attr("fill", "none")
+	.attr("stroke", "#305295")
+	.attr("stroke-width", lineWidth);
+
+for (var i = 1; i < 7; i++){
+	svg.append("line")
+	.attr("x1", boxWidth*i)
+	.attr("y1", 0)
+	.attr("x2", boxWidth*i)
+	.attr("y2", height)
+	.attr("stroke", "#305295")
+	.attr("stroke-width", lineWidth/2);
+
+	svg.append("line")
+	.attr("x1", 0)
+	.attr("y1", boxHeight*i)
+	.attr("x2", width)
+	.attr("y2", boxHeight*i)
+	.attr("stroke", "#305295")
+	.attr("stroke-width", lineWidth/2);
+}
+
 
 window.onload = function() {
 	// setup the button click
-	document.getElementById("row0").innerHTML = JSON.stringify(connectFour[0]);
-	document.getElementById("row1").innerHTML = JSON.stringify(connectFour[1]);
-	document.getElementById("row2").innerHTML = JSON.stringify(connectFour[2]);
-	document.getElementById("row3").innerHTML = JSON.stringify(connectFour[3]);
-	document.getElementById("row4").innerHTML = JSON.stringify(connectFour[4]);
-	document.getElementById("row5").innerHTML = JSON.stringify(connectFour[5]);
+	updateBoard(connectFour);
+	// document.getElementById("row0").innerHTML = JSON.stringify(connectFour[0]);
+	// document.getElementById("row1").innerHTML = JSON.stringify(connectFour[1]);
+	// document.getElementById("row2").innerHTML = JSON.stringify(connectFour[2]);
+	// document.getElementById("row3").innerHTML = JSON.stringify(connectFour[3]);
+	// document.getElementById("row4").innerHTML = JSON.stringify(connectFour[4]);
+	// document.getElementById("row5").innerHTML = JSON.stringify(connectFour[5]);
 	document.getElementById("myButton").onclick = function() {
 		callAb()
 	};
@@ -41,12 +117,13 @@ $(document).ready(function(){
             	return;
             }
             console.log("opponent move: "+JSON.stringify(connectFour));
-            document.getElementById("row0").innerHTML = JSON.stringify(connectFour[0]);
-			document.getElementById("row1").innerHTML = JSON.stringify(connectFour[1]);
-			document.getElementById("row2").innerHTML = JSON.stringify(connectFour[2]);
-			document.getElementById("row3").innerHTML = JSON.stringify(connectFour[3]);
-			document.getElementById("row4").innerHTML = JSON.stringify(connectFour[4]);
-			document.getElementById("row5").innerHTML = JSON.stringify(connectFour[5]);
+            updateBoard(connectFour);
+   //          document.getElementById("row0").innerHTML = JSON.stringify(connectFour[0]);
+			// document.getElementById("row1").innerHTML = JSON.stringify(connectFour[1]);
+			// document.getElementById("row2").innerHTML = JSON.stringify(connectFour[2]);
+			// document.getElementById("row3").innerHTML = JSON.stringify(connectFour[3]);
+			// document.getElementById("row4").innerHTML = JSON.stringify(connectFour[4]);
+			// document.getElementById("row5").innerHTML = JSON.stringify(connectFour[5]);
 			checkLoss();
         }
     };
@@ -63,12 +140,13 @@ function callAb() {
                 dataType: "json",
                 success: function(response) {
                     connectFour = jsonify(response);
-                    document.getElementById("row0").innerHTML = JSON.stringify(connectFour[0]);
-					document.getElementById("row1").innerHTML = JSON.stringify(connectFour[1]);
-					document.getElementById("row2").innerHTML = JSON.stringify(connectFour[2]);
-					document.getElementById("row3").innerHTML = JSON.stringify(connectFour[3]);
-					document.getElementById("row4").innerHTML = JSON.stringify(connectFour[4]);
-					document.getElementById("row5").innerHTML = JSON.stringify(connectFour[5]);
+                    updateBoard(connectFour);
+     //                document.getElementById("row0").innerHTML = JSON.stringify(connectFour[0]);
+					// document.getElementById("row1").innerHTML = JSON.stringify(connectFour[1]);
+					// document.getElementById("row2").innerHTML = JSON.stringify(connectFour[2]);
+					// document.getElementById("row3").innerHTML = JSON.stringify(connectFour[3]);
+					// document.getElementById("row4").innerHTML = JSON.stringify(connectFour[4]);
+					// document.getElementById("row5").innerHTML = JSON.stringify(connectFour[5]);
 
 					if (response[6] == "win"){
 						setTimeout(function(){ alert("You win!"); }, 500);
@@ -112,24 +190,29 @@ function jsonify(response) {
 	});
 	return json;
 }
+
+function updateBoard(connectFour){
+	for (var rowNum = 0; rowNum < 6; rowNum++){
+		for (var i = 0; i < 7; i++){
+			if (connectFour[rowNum][i] == "X"){
+				svg.append("circle")
+					.attr("cy", boxHeight*rowNum + boxHeight/2)
+					.attr("cx", boxWidth*i + boxWidth/2)
+					.attr("fill", "#CC4732")
+					.attr("stroke", "none")
+					.attr("r", boxWidth/2.5);
+			}
+			else if (connectFour[rowNum][i] == "O"){
+				svg.append("circle")
+					.attr("cy", boxHeight*rowNum + boxHeight/2)
+					.attr("cx", boxWidth*i + boxWidth/2)
+					.attr("fill", "#F0E132")
+					.attr("stroke", "none")
+					.attr("r", boxWidth/2.5);
+			}
+		}
+	}
+}
 </script>
-<p id="row0"></p>
-<p id="row1"></p>
-<p id="row2"></p>
-<p id="row3"></p>
-<p id="row4"></p>
-<p id="row5"></p>
-<h4>Our AI Will Tell You Your Next Best Move</h4>
-<p><input type="button" id="myButton" value="Play My Next Best Move"></p>
-<h4>Select Opponent's Move</h4>
-<p> 
-    <label><input type="radio" name="move" value="0">0</label> 
-    <label><input type="radio" name="move" value="1">1</label>
-    <label><input type="radio" name="move" value="2">2</label> 
-    <label><input type="radio" name="move" value="3">3</label>
-    <label><input type="radio" name="move" value="4">4</label> 
-    <label><input type="radio" name="move" value="5">5</label>
-    <label><input type="radio" name="move" value="6">6</label>
-</p>
-<p><input type="button" id="opButton" value="Play Opponent's Move"></p>
+
 
