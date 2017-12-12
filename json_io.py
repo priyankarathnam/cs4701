@@ -11,10 +11,17 @@ TARGET = 4
 ROWS = 6
 COLS = 7
 DEEPEST = 3
+DEEPEST_1 = 1
+DEEPEST_2 = 2
 OFFENSE_PATTERNS = {"almost_win": ["","X","X","X",""], "three_x1": ["X","X","X",""], "three_x2": ["X","X","","X"], "two_x1": ["X", "","X",""], "two_x2": ["","X","X",""], "two_x3": ["X","X","",""]}
 DEFENSE_PATTERNS = {"almost_loss": ["","O","O","O",""], "three_o1": ["O","O","O",""], "three_o2": ["O","O","","O"], "two_o1": ["O", "","O",""], "two_o2": ["","O","O",""], "two_o3": ["O","O","",""]}
-OFFENSE_SCORES = {"almost_win": 1000, "three_x1": 100, "three_x2": 100, "two_x1": 10, "two_x2": 10, "two_x3": 10}
-DEFENSE_SCORES = {"almost_loss": -3000, "three_o1": -300, "three_o2": -300, "two_o1": -30, "two_o2": -30, "two_o3": -30}
+OFFENSE_SCORES_MID = {"almost_win": 1000, "three_x1": 100, "three_x2": 100, "two_x1": 10, "two_x2": 10, "two_x3": 10}
+DEFENSE_SCORES_MID = {"almost_loss": -3000, "three_o1": -300, "three_o2": -300, "two_o1": -30, "two_o2": -30, "two_o3": -30}
+OFFENSE_SCORES_OFF = {"almost_win": 10000, "three_x1": 1000, "three_x2": 1000, "two_x1": 100, "two_x2": 100, "two_x3": 100}
+DEFENSE_SCORES_OFF = {"almost_loss": -1000, "three_o1": -100, "three_o2": -100, "two_o1": -10, "two_o2": -10, "two_o3": -10}
+OFFENSE_SCORES_DEF = {"almost_win": 1000, "three_x1": 100, "three_x2": 100, "two_x1": 10, "two_x2": 10, "two_x3": 10}
+DEFENSE_SCORES_DEF = {"almost_loss": -10000, "three_o1": -1000, "three_o2": -1000, "two_o1": -100, "two_o2": -100, "two_o3": -100}
+
 next_actions = {}
 
 app = Flask(__name__)
@@ -72,7 +79,7 @@ empty = [["", "", "", "", "", "", ""],
  		["", "", "", "", "", "", ""], 
  		["", "", "", "", "", "", ""]]
 
-def utility_ai(board, current_player, opponent_player):
+def utility_ai(board, current_player, opponent_player, off_scores, def_scores):
 	total = 0
 	OFFENSE_PATTERNS = {"almost_win": ["", current_player, current_player, current_player,""], "three_x1": [current_player, current_player, current_player,""], "three_x2": [current_player, current_player,"",current_player], "two_x1": [current_player, "",current_player,""], "two_x2": ["",current_player,current_player,""], "two_x3": [current_player,current_player,"",""]}
 	DEFENSE_PATTERNS = {"almost_loss": ["",opponent_player,opponent_player,opponent_player,""], "three_o1": [opponent_player,opponent_player,opponent_player,""], "three_o2": [opponent_player,opponent_player,"",opponent_player], "two_o1": [opponent_player, "",opponent_player,""], "two_o2": ["",opponent_player,opponent_player,""], "two_o3": [opponent_player,opponent_player,"",""]}
@@ -80,12 +87,12 @@ def utility_ai(board, current_player, opponent_player):
 	for pattern in OFFENSE_PATTERNS.keys():
 		num = test_directions(board, OFFENSE_PATTERNS[pattern])
 		if not num == 0:
-			total+=OFFENSE_SCORES[pattern]*num
+			total+=off_scores[pattern]*num
 	#defense
 	for pattern in DEFENSE_PATTERNS.keys():
 		num = test_directions(board, DEFENSE_PATTERNS[pattern])
 		if not num == 0:
-			total+=DEFENSE_SCORES[pattern]*num
+			total+=def_scores[pattern]*num
 	return total
 
 first_heuristic = utility_ai		# heuristic for the first player
@@ -105,7 +112,7 @@ def a_b_search_ai(board, depth, current_player, opponent_player):
 	assert len(board) == ROWS
 	assert len(board[0]) == COLS
 	v = max_value_ai(board, -math.inf, math.inf, depth, current_player, opponent_player)
-	print(next_actions)
+	#print(next_actions)
 	return result(board, next_actions[v], current_player)
 
 def ai_against_random(board, first_player, second_player):
@@ -155,20 +162,27 @@ def ai_against_ai(board, first_player, second_player):
 
 
 def max_value_ai(board, a, b, depth, current_player, opponent_player):
-	if depth == DEEPEST or is_win(board, current_player) or is_win(board, opponent_player):
+	if current_player == "X":
+		deepest = DEEPEST_1
+	else:
+		deepest = DEEPEST_2
+	if depth == deepest or is_win(board, current_player) or is_win(board, opponent_player):
 		if is_win(board, opponent_player):
 			return -math.inf
 		if is_win(board, current_player):
 			return math.inf
 		if current_player == "X":
-			return first_heuristic(board, current_player, opponent_player)
+			return first_heuristic(board, current_player, opponent_player, OFFENSE_SCORES_MID, DEFENSE_SCORES_MID)
 		else:
-			return second_heuristic(board, current_player, opponent_player)
+			return second_heuristic(board, current_player, opponent_player, OFFENSE_SCORES_MID, DEFENSE_SCORES_MID)
 	v = -math.inf
 	for action in actions(board):
 		action_value = min_value_ai(result(board, action, current_player), a, b, depth+1, current_player, opponent_player)
 		if depth == 0:
-			next_actions[action_value] = action
+			if (action_value in next_actions.keys() and random.choice([0,1]) == 1):
+				pass
+			else:
+				next_actions[action_value] = action
 		v = max(v, action_value)
 		if v >= b:
 			return v
@@ -176,15 +190,19 @@ def max_value_ai(board, a, b, depth, current_player, opponent_player):
 	return v
 
 def min_value_ai(board, a, b, depth, current_player, opponent_player):
-	if depth == DEEPEST or is_win(board, current_player) or is_win(board, opponent_player):
+	if current_player == "X":
+		deepest = DEEPEST_1
+	else:
+		deepest = DEEPEST_2
+	if depth == deepest or is_win(board, current_player) or is_win(board, opponent_player):
 		if is_win(board, opponent_player):
 			return -math.inf
 		if is_win(board, current_player):
 			return math.inf
 		if current_player == "X":
-			return first_heuristic(board, current_player, opponent_player)
+			return first_heuristic(board, current_player, opponent_player, OFFENSE_SCORES_MID, DEFENSE_SCORES_MID)
 		else:
-			return second_heuristic(board, current_player, opponent_player)
+			return second_heuristic(board, current_player, opponent_player, OFFENSE_SCORES_MID, DEFENSE_SCORES_MID)
 	v = math.inf
 	for action in actions(board):
 		v = min(v, max_value_ai(result(board, action, opponent_player), a, b, depth+1, current_player, opponent_player))
@@ -192,6 +210,10 @@ def min_value_ai(board, a, b, depth, current_player, opponent_player):
 			return v
 		b = min(b,v)
 	return v
+
+def test_depth(n):
+	for i in range(0,n):
+		ai_against_ai(empty,"X","O")
 
 def max_value(board, a, b, depth):
 	if depth == DEEPEST or is_win(board, "X") or is_win(board, "O"):
