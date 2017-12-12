@@ -22,8 +22,6 @@ DEFENSE_SCORES_OFF = {"almost_loss": -1000, "three_o1": -100, "three_o2": -100, 
 OFFENSE_SCORES_DEF = {"almost_win": 1000, "three_x1": 100, "three_x2": 100, "two_x1": 10, "two_x2": 10, "two_x3": 10}
 DEFENSE_SCORES_DEF = {"almost_loss": -10000, "three_o1": -1000, "three_o2": -1000, "two_o1": -100, "two_o2": -100, "two_o3": -100}
 
-next_actions = {}
-
 app = Flask(__name__)
 
 @app.route('/')
@@ -68,7 +66,8 @@ def worker2():
 def a_b_search(board, depth):
 	assert len(board) == ROWS
 	assert len(board[0]) == COLS
-	v = max_value(board, -math.inf, math.inf, depth)
+	next_actions = {}
+	v = max_value(board, -math.inf, math.inf, depth, next_actions)
 	print(next_actions)
 	return result(board, next_actions[v], "X")
 
@@ -111,9 +110,9 @@ def is_draw(board):
 def a_b_search_ai(board, depth, current_player, opponent_player):
 	assert len(board) == ROWS
 	assert len(board[0]) == COLS
-	v = max_value_ai(board, -math.inf, math.inf, depth, current_player, opponent_player)
-	#print(next_actions)
-	return result(board, next_actions[v], current_player)
+	next_actions_current_player = {}
+	v = max_value_ai(board, -math.inf, math.inf, depth, current_player, opponent_player, next_actions_current_player)
+	return result(board, next_actions_current_player[v], current_player)
 
 def ai_against_random(board, first_player, second_player):
 	current_player = first_player
@@ -161,7 +160,7 @@ def ai_against_ai(board, first_player, second_player):
 	print("number of turns: " + str(step))
 
 
-def max_value_ai(board, a, b, depth, current_player, opponent_player):
+def max_value_ai(board, a, b, depth, current_player, opponent_player, next_actions_current_player):
 	if current_player == "X":
 		deepest = DEEPEST_1
 	else:
@@ -177,19 +176,19 @@ def max_value_ai(board, a, b, depth, current_player, opponent_player):
 			return second_heuristic(board, current_player, opponent_player, OFFENSE_SCORES_MID, DEFENSE_SCORES_MID)
 	v = -math.inf
 	for action in actions(board):
-		action_value = min_value_ai(result(board, action, current_player), a, b, depth+1, current_player, opponent_player)
+		action_value = min_value_ai(result(board, action, current_player), a, b, depth+1, current_player, opponent_player, next_actions_current_player)
 		if depth == 0:
-			if (action_value in next_actions.keys() and random.choice([0,1]) == 1):
+			if (action_value in next_actions_current_player.keys() and random.choice([0,1]) == 1):
 				pass
 			else:
-				next_actions[action_value] = action
+				next_actions_current_player[action_value] = action
 		v = max(v, action_value)
 		if v >= b:
 			return v
 		a = max(a,v)
 	return v
 
-def min_value_ai(board, a, b, depth, current_player, opponent_player):
+def min_value_ai(board, a, b, depth, current_player, opponent_player, next_actions_current_player):
 	if current_player == "X":
 		deepest = DEEPEST_1
 	else:
@@ -205,7 +204,7 @@ def min_value_ai(board, a, b, depth, current_player, opponent_player):
 			return second_heuristic(board, current_player, opponent_player, OFFENSE_SCORES_MID, DEFENSE_SCORES_MID)
 	v = math.inf
 	for action in actions(board):
-		v = min(v, max_value_ai(result(board, action, opponent_player), a, b, depth+1, current_player, opponent_player))
+		v = min(v, max_value_ai(result(board, action, opponent_player), a, b, depth+1, current_player, opponent_player, next_actions_current_player))
 		if v <= a:
 			return v
 		b = min(b,v)
@@ -215,7 +214,7 @@ def test_depth(n):
 	for i in range(0,n):
 		ai_against_ai(empty,"X","O")
 
-def max_value(board, a, b, depth):
+def max_value(board, a, b, depth, next_actions):
 	if depth == DEEPEST or is_win(board, "X") or is_win(board, "O"):
 		# print("terminal test")
 		if is_win(board, "O"):
@@ -230,7 +229,7 @@ def max_value(board, a, b, depth):
 		# print("depth: "+str(depth))
 		# print("action: "+str(action))
 		# print(result(board, action, "X"))
-		action_value = min_value(result(board, action, "X"), a, b, depth+1)
+		action_value = min_value(result(board, action, "X"), a, b, depth+1, next_actions)
 		#print("action value: "+str(action_value))
 		if depth == 0:
 			if (action_value in next_actions.keys() and random.choice([0,1]) == 1):
@@ -243,7 +242,7 @@ def max_value(board, a, b, depth):
 		a = max(a,v)
 	return v
 
-def min_value(board, a, b, depth):
+def min_value(board, a, b, depth, next_actions):
 	if depth == DEEPEST or is_win(board, "X") or is_win(board, "O"):
 		# print("terminal test")
 		if is_win(board, "O"):
@@ -257,7 +256,7 @@ def min_value(board, a, b, depth):
 		# print("depth: "+str(depth))
 		# print("action: "+str(action))
 		# print(result(board, action, "O"))
-		v = min(v, max_value(result(board, action, "O"), a, b, depth+1))
+		v = min(v, max_value(result(board, action, "O"), a, b, depth+1, next_actions))
 		if v <= a:
 			return v
 		b = min(b,v)
@@ -322,12 +321,12 @@ def utility(board):
 	for pattern in OFFENSE_PATTERNS.keys():
 		num = test_directions(board, OFFENSE_PATTERNS[pattern])
 		if not num == 0:
-			total+=OFFENSE_SCORES[pattern]*num
+			total+=OFFENSE_SCORES_MID[pattern]*num
 	#defense
 	for pattern in DEFENSE_PATTERNS.keys():
 		num = test_directions(board, DEFENSE_PATTERNS[pattern])
 		if not num == 0:
-			total+=DEFENSE_SCORES[pattern]*num
+			total+=DEFENSE_SCORES_MID[pattern]*num
 	return total
 
 #returns a list of numbers that represent possible actions (number 0-6)
