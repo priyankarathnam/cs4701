@@ -46,6 +46,7 @@ var connectFour = [
 	{ "0":"", "1":"", "2":"", "3":"", "4":"", "5":"", "6":""},
 	{ "0":"", "1":"", "2":"", "3":"", "4":"", "5":"", "6":""}
 ];
+var win = false;
 var width = 700;
 var height = 600;
 var lineWidth = 6;
@@ -131,7 +132,11 @@ $(document).ready(function(){
 			// document.getElementById("row4").innerHTML = JSON.stringify(connectFour[4]);
 			// document.getElementById("row5").innerHTML = JSON.stringify(connectFour[5]);
 			checkWin();
-			callAb();
+			console.log("win?: "+win);
+			if (!win){
+				callAb();
+			}
+			
         }
     };
     
@@ -179,7 +184,8 @@ function checkWin() {
                 dataType: "json",
                 success: function(response) {
 					if (response == "loss"){
-						alert("You win!")
+						win = true;
+						alert("You win!");
 					}
                 },
                 error: function(err) {
