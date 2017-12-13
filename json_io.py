@@ -12,7 +12,7 @@ ROWS = 6
 COLS = 7
 DEEPEST = 3
 DEEPEST_1 = 3
-DEEPEST_2 = 4
+DEEPEST_2 = 3
 OFFENSE_PATTERNS = {"almost_win": ["","X","X","X",""], "three_x1": ["X","X","X",""], "three_x2": ["X","X","","X"], "two_x1": ["X", "","X",""], "two_x2": ["","X","X",""], "two_x3": ["X","X","",""]}
 DEFENSE_PATTERNS = {"almost_loss": ["","O","O","O",""], "three_o1": ["O","O","O",""], "three_o2": ["O","O","","O"], "two_o1": ["O", "","O",""], "two_o2": ["","O","O",""], "two_o3": ["O","O","",""]}
 OFFENSE_SCORES_MID = {"almost_win": 1000, "three_x1": 100, "three_x2": 100, "two_x1": 10, "two_x2": 10, "two_x3": 10}
@@ -175,7 +175,7 @@ def max_value_ai(board, a, b, depth, current_player, opponent_player, next_actio
 		if current_player == "X":
 			return first_heuristic(board, current_player, opponent_player, OFFENSE_SCORES_MID, DEFENSE_SCORES_MID)
 		else:
-			return second_heuristic(board, current_player, opponent_player, OFFENSE_SCORES_MID, DEFENSE_SCORES_MID)
+			return second_heuristic(board, current_player, opponent_player, OFFENSE_SCORES_DEF, DEFENSE_SCORES_DEF)
 	v = -math.inf
 	for action in actions(board):
 		action_value = min_value_ai(result(board, action, current_player), a, b, depth+1, current_player, opponent_player, next_actions_current_player)
@@ -203,7 +203,7 @@ def min_value_ai(board, a, b, depth, current_player, opponent_player, next_actio
 		if current_player == "X":
 			return first_heuristic(board, current_player, opponent_player, OFFENSE_SCORES_MID, DEFENSE_SCORES_MID)
 		else:
-			return second_heuristic(board, current_player, opponent_player, OFFENSE_SCORES_MID, DEFENSE_SCORES_MID)
+			return second_heuristic(board, current_player, opponent_player, OFFENSE_SCORES_DEF, DEFENSE_SCORES_DEF)
 	v = math.inf
 	for action in actions(board):
 		v = min(v, max_value_ai(result(board, action, opponent_player), a, b, depth+1, current_player, opponent_player, next_actions_current_player))
