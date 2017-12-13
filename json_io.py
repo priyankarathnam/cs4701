@@ -11,8 +11,8 @@ TARGET = 4
 ROWS = 6
 COLS = 7
 DEEPEST = 3
-DEEPEST_1 = 1
-DEEPEST_2 = 2
+DEEPEST_1 = 3
+DEEPEST_2 = 4
 OFFENSE_PATTERNS = {"almost_win": ["","X","X","X",""], "three_x1": ["X","X","X",""], "three_x2": ["X","X","","X"], "two_x1": ["X", "","X",""], "two_x2": ["","X","X",""], "two_x3": ["X","X","",""]}
 DEFENSE_PATTERNS = {"almost_loss": ["","O","O","O",""], "three_o1": ["O","O","O",""], "three_o2": ["O","O","","O"], "two_o1": ["O", "","O",""], "two_o2": ["","O","O",""], "two_o3": ["O","O","",""]}
 OFFENSE_SCORES_MID = {"almost_win": 1000, "three_x1": 100, "three_x2": 100, "two_x1": 10, "two_x2": 10, "two_x3": 10}
@@ -133,12 +133,13 @@ def ai_against_random(board, first_player, second_player):
 		step += 1
 	if is_win(board, "X"):
 		print("X has won!")
+		return (1, step)
 	elif is_win(board, "O"):
 		print("O has won!")
+		return (-1, step)
 	else:
 		print("Game is a draw!")
-	print(board)
-	print("number of turns: " + str(step))
+		return (0, step)
 
 def ai_against_ai(board, first_player, second_player):
 	step = 0
@@ -152,12 +153,13 @@ def ai_against_ai(board, first_player, second_player):
 		step += 1
 	if is_win(board, "X"):
 		print("X has won!")
+		return (1, step)
 	elif is_win(board, "O"):
 		print("O has won!")
+		return (-1, step)
 	else:
 		print("Game is a draw!")
-	print(board)
-	print("number of turns: " + str(step))
+		return (0, step)
 
 
 def max_value_ai(board, a, b, depth, current_player, opponent_player, next_actions_current_player):
@@ -211,8 +213,38 @@ def min_value_ai(board, a, b, depth, current_player, opponent_player, next_actio
 	return v
 
 def test_depth(n):
+	wins = 0
+	win_moves = 0
+	draws = 0
+	draw_moves = 0
+	losses = 0
+	loss_moves = 0
 	for i in range(0,n):
-		ai_against_ai(empty,"X","O")
+		(score, moves) = ai_against_ai(empty,"X","O")
+		if score == 1:
+			wins+=1
+			win_moves+=moves
+		elif score == 0:
+			draws+=1
+			draw_moves+=moves
+		else:
+			losses+=1
+			loss_moves+=moves
+	print(wins/n)
+	print(draws/n)
+	print(losses/n)
+	if wins == 0:
+		print("0")
+	else:
+		print(win_moves/wins)
+	if draws == 0:
+		print("0")
+	else:
+		print(draw_moves/draws)
+	if losses == 0:
+		print("0")
+	else:
+		print(loss_moves/losses)
 
 def max_value(board, a, b, depth, next_actions):
 	if depth == DEEPEST or is_win(board, "X") or is_win(board, "O"):
